@@ -5,7 +5,7 @@
 
 Développé par BRKIC Emel, passionné par la cybersécurité, l’analyse système et le développement d’outils défensifs avancés.
 
-Ce projet s’inscrit dans une démarche d’apprentissage approfondi du fonctionnement interne des logiciels de sécurité modernes, en recréant des mécanismes inspirés des antivirus et des solutions EDR (Endpoint Detection & Response), tout en restant transparent, personnalisable.
+Ce projet s’inscrit dans une démarche d’apprentissage approfondi du fonctionnement interne des logiciels de sécurité modernes, en recréant des mécanismes inspirés des antivirus et des solutions EDR (Endpoint Detection & Response), tout en restant transparent, personnalisable et éducatif.
 
 🚀 Présentation du projet
 
@@ -153,4 +153,24 @@ filtrage dynamique
 
 journal en direct
 
-🎯
+🎯 Objectif du projet
+
+Morner a pour objectif d’explorer et de démontrer le fonctionnement interne des outils de cybersécurité modernes en recréant leurs principes fondamentaux dans un environnement pédagogique, transparent et entièrement contrôlé par l’utilisateur.
+
+⚠️ Licence et droits d’utilisation
+
+© BRKIC Emel — Tous droits réservés
+
+Ce projet est une création originale protégée.
+
+Toute modification du code source est strictement interdite sans autorisation explicite de l’auteur.
+
+La redistribution modifiée du projet est interdite.
+
+La revente totale ou partielle du logiciel ou de son code source est interdite.
+
+L’utilisation commerciale est interdite sans accord écrit préalable.
+
+Ce dépôt est fourni uniquement à des fins personnelles, éducatives et de démonstration.
+
+Toute utilisation implique l’acceptation de ces conditions.
