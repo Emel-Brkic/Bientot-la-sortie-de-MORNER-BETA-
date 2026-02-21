@@ -5,6 +5,10 @@
 
 Développé par BRKIC Emel, passionné par la cybersécurité, l’analyse système et le développement d’outils défensifs avancés.
 
+(lapplication contient énormément de bug pour le moment attention !!
+Je suis en aucun cas responsable des problemes que les bugs peuvents faire !
+BETA !!!
+
 https://drive.google.com/file/d/1dYjCcx6xz3gSYF71__9wYWxHY0rv5Mwb/view?usp=sharing
 
 Ce projet s’inscrit dans une démarche d’apprentissage approfondi du fonctionnement interne des logiciels de sécurité modernes, en recréant des mécanismes inspirés des antivirus et des solutions EDR (Endpoint Detection & Response), tout en restant transparent, personnalisable et éducatif.
