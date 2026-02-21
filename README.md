@@ -4,7 +4,9 @@
 👨‍💻 À propos du développeur
 
 Développé par BRKIC Emel, passionné par la cybersécurité, l’analyse système et le développement d’outils défensifs avancés.
+
 https://drive.google.com/file/d/1dYjCcx6xz3gSYF71__9wYWxHY0rv5Mwb/view?usp=sharing
+
 Ce projet s’inscrit dans une démarche d’apprentissage approfondi du fonctionnement interne des logiciels de sécurité modernes, en recréant des mécanismes inspirés des antivirus et des solutions EDR (Endpoint Detection & Response), tout en restant transparent, personnalisable et éducatif.
 
 🚀 Présentation du projet
