@@ -176,3 +176,5 @@ L’utilisation commerciale est interdite sans accord écrit préalable.
 Ce dépôt est fourni uniquement à des fins personnelles, éducatives et de démonstration.
 
 Toute utilisation implique l’acceptation de ces conditions.
+Et cette application est en beta je ne suis pas responsable de tout dommages sur vautre machine, et de son utilisation.
+
