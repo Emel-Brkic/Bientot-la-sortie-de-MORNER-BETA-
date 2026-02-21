@@ -5,7 +5,7 @@
 
 Développé par BRKIC Emel, passionné par la cybersécurité, l’analyse système et le développement d’outils défensifs avancés.
 
-(lapplication contient énormément de bug pour le moment attention !!
+( L'application contient énormément de bug pour le moment attention !! )
 Je suis en aucun cas responsable des problemes que les bugs peuvents faire !
 BETA !!!
 
