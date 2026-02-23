@@ -19,7 +19,7 @@ L’auteur ne peut être tenu responsable des dommages potentiels liés à son u
 
 📦 Télécharger la version BETA
 
-👉 https://drive.google.com/file/d/1dYjCcx6xz3gSYF71__9wYWxHY0rv5Mwb/view?usp=sharing
+👉 [https://drive.google.com/file/d/1dYjCcx6xz3gSYF71__9wYWxHY0rv5Mwb/view?usp=sharing](https://drive.google.com/file/d/1Vg5bQzhZlftZ37LETvhMxE-F-LTIlaQo/view?usp=sharing)
 
 🚀 Présentation
 
