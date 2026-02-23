@@ -1,184 +1,227 @@
-# Bientot-la-sortie-de-MORNER-BETA-
+🛡️ MORNER (BETA) — Surveillance Réseau & Détection Comportementale
+👨‍💻 Développeur
 
-🛡️ Morner — Surveillance réseau avancée & protection comportementale
-👨‍💻 À propos du développeur
+Projet développé par BRKIC Emel
+Étudiant passionné par :
 
-Développé par BRKIC Emel, passionné par la cybersécurité, l’analyse système et le développement d’outils défensifs avancés.
+la cybersécurité
 
-( L'application contient énormément de bug pour le moment attention !! )
-Je suis en aucun cas responsable des problemes que les bugs peuvents faire !
-BETA !!!
+l’analyse système
 
-https://drive.google.com/file/d/1dYjCcx6xz3gSYF71__9wYWxHY0rv5Mwb/view?usp=sharing
+le fonctionnement interne des outils de protection modernes
 
-Ce projet s’inscrit dans une démarche d’apprentissage approfondi du fonctionnement interne des logiciels de sécurité modernes, en recréant des mécanismes inspirés des antivirus et des solutions EDR (Endpoint Detection & Response), tout en restant transparent, personnalisable et éducatif.
+⚠️ Morner est actuellement en version BETA.
+Des bugs peuvent être présents.
 
-🚀 Présentation du projet
+L’auteur ne peut être tenu responsable des dommages potentiels liés à son utilisation.
 
-Morner est une application de surveillance réseau en temps réel développée en Python, capable d’analyser l’activité réseau d’un ordinateur, de détecter des comportements suspects et de réagir automatiquement face à des menaces potentielles.
+📦 Télécharger la version BETA
 
-Contrairement aux outils classiques reposant uniquement sur des signatures statiques, Morner analyse le comportement réseau des processus afin d’identifier des activités anormales ou dangereuses.
+👉 https://drive.google.com/file/d/1dYjCcx6xz3gSYF71__9wYWxHY0rv5Mwb/view?usp=sharing
 
-Le logiciel agit comme un hybride entre :
+🚀 Présentation
 
-un moniteur réseau en temps réel,
+Morner est un logiciel de surveillance réseau en temps réel développé en Python.
 
-un analyseur comportemental,
+Son objectif est de détecter des comportements suspects sur une machine en analysant l’activité réseau des processus — et non simplement via des signatures connues.
 
-et un système de protection défensive léger.
+Il s’inspire du fonctionnement des :
+
+Antivirus comportementaux
+
+EDR (Endpoint Detection & Response)
+
+tout en restant :
+
+✔️ pédagogique
+✔️ transparent
+✔️ personnalisable
 
 🔍 Surveillance réseau en temps réel
 
-Morner inspecte en continu les connexions réseau actives du système via une analyse bas niveau.
+Morner analyse en continu :
 
-Il surveille notamment :
+les connexions réseau actives
 
-les adresses IP distantes
+les IP distantes
 
 les ports utilisés
 
-les processus responsables des connexions
+les processus responsables
 
 la fréquence des communications
 
-l’état des connexions IPv4 et IPv6
+IPv4 & IPv6
 
-Toutes les activités sont affichées en direct dans une interface graphique interactive.
+Toutes les données sont visibles dans une interface graphique en direct.
 
-🧠 Moteur de détection comportementale
+🧠 Détection comportementale
 
-Le cœur du projet repose sur un système d’analyse comportementale capable d’attribuer un score de danger à chaque processus.
+Le moteur de Morner attribue un score de risque à chaque processus en fonction de :
 
-Ce score est calculé selon plusieurs critères :
+nombre de connexions
 
-nombre de connexions par minute
+diversité des IPs
 
-quantité d’IPs uniques contactées
+diversité des ports
 
-diversité des ports utilisés
+fréquence réseau
 
-utilisation de ports suspects
+schémas anormaux
 
-schémas réseau anormaux
-
-Ce mécanisme permet de détecter des comportements similaires à :
+Cela permet de détecter des comportements proches de :
 
 botnets
 
-malwares communiquant avec un serveur distant
+malwares communicants
 
 scanners réseau
 
-tentatives d’exfiltration de données
+exfiltration de données
 
-☣️ Base de données d’IP malveillantes
+➡️ Morner ne se base pas uniquement sur des signatures.
 
-Morner utilise une base de données personnalisable contenant des adresses IP considérées comme dangereuses.
+⏱ Détection de comportements avancés
 
-Lorsqu’une correspondance est détectée :
+Morner peut identifier :
 
-la connexion est immédiatement signalée
+trafic périodique (beacon malware)
 
-une alerte est générée
+scans réseau
 
-des actions défensives peuvent être appliquées automatiquement
+activités anormalement intensives
 
-La base peut être importée, modifiée et rechargée dynamiquement.
+Le moteur peut apprendre le comportement normal du système via un mode apprentissage.
 
-🚫 Système de protection automatique
+☣️ Base d’IP suspectes
 
-Lorsque le mode protection est activé, Morner peut :
+Une base personnalisable permet de :
 
-bloquer automatiquement une IP via le pare-feu Windows
+détecter des connexions vers des IP dangereuses
 
-interrompre un processus suspect
+générer des alertes
 
-notifier l’utilisateur en temps réel
+déclencher des actions automatiques
 
-demander une autorisation manuelle
+La base peut être :
 
-Le logiciel devient ainsi un outil de défense actif et non seulement d’observation.
+importée
 
-🎮 Mode Gaming sécurisé
+modifiée
 
-Afin d’éviter les faux positifs pendant les sessions de jeu, Morner intègre un mode spécial protégeant les processus connus liés aux jeux vidéo.
+rechargée dynamiquement
 
-Ce mode évite :
+🚫 Protection active
 
-les déconnexions involontaires
+Lorsque activé, Morner peut :
 
-les conflits avec les anti-cheats
+bloquer une IP via le pare-feu
 
-les interruptions de session.
+stopper un processus suspect
 
-🔐 Coffre-fort sécurisé
+alerter l’utilisateur
 
-Morner inclut un système de coffre-fort chiffré permettant de stocker des informations sensibles protégées par un mot de passe maître.
+demander validation
 
-Les données sont chiffrées localement à l’aide d’une clé dérivée du mot de passe utilisateur.
+➡️ Morner devient un outil défensif actif.
 
-🧾 Journalisation & analyse forensic
+🎮 Mode Gaming
 
-Chaque événement est enregistré avec horodatage afin de permettre :
+Un mode spécial protège les processus connus liés aux jeux afin d’éviter :
 
-l’analyse après incident
+faux positifs
 
-le suivi des activités réseau
+déconnexions
 
-l’investigation de comportements suspects
+conflits avec anti-cheat
 
-l’export des connexions pour analyse
+🔐 Coffre sécurisé
 
-⚙️ Personnalisation avancée
+Morner inclut un coffre chiffré permettant de stocker :
 
-Le comportement du moteur de détection peut être entièrement ajusté :
+données sensibles
 
-whitelist de processus autorisés
+configurations critiques
+
+Les informations sont protégées par mot de passe via chiffrement AES.
+
+🧾 Journalisation
+
+Tous les événements sont enregistrés :
+
+connexions
+
+alertes
+
+actions
+
+Permettant :
+
+analyse forensic
+
+suivi réseau
+
+investigation après incident
+
+⚙️ Personnalisation
+
+Le moteur est ajustable :
+
+whitelist de processus
 
 whitelist de domaines
 
-blacklist de mots-clés suspects
+blacklist de mots-clés
 
-seuils de détection comportementale
+seuils de détection
 
 activation du blocage automatique
 
-configuration des processus protégés
+processus protégés
 
-🖥️ Interface graphique moderne
+🖥️ Interface
 
-L’application dispose d’une interface complète développée avec Tkinter et ttk :
+Interface développée avec Tkinter :
 
-affichage des connexions en temps réel
+affichage temps réel
 
-code couleur selon le niveau de danger
+code couleur de danger
 
-actions rapides (autoriser, bloquer, tuer processus)
+actions rapides
 
-filtrage dynamique
+journal live
 
-journal en direct
+🎯 Objectif
 
-🎯 Objectif du projet
+Morner est un projet pédagogique visant à :
 
-Morner a pour objectif d’explorer et de démontrer le fonctionnement interne des outils de cybersécurité modernes en recréant leurs principes fondamentaux dans un environnement pédagogique, transparent et entièrement contrôlé par l’utilisateur.
+➡️ comprendre le fonctionnement des solutions de cybersécurité modernes
+➡️ recréer leurs principes fondamentaux dans un environnement contrôlé
 
-⚠️ Licence et droits d’utilisation
+⚠️ Licence
 
 © BRKIC Emel — Tous droits réservés
 
-Ce projet est une création originale protégée.
+Ce projet est fourni uniquement à des fins :
 
-Toute modification du code source est strictement interdite sans autorisation explicite de l’auteur.
+éducatives
 
-La redistribution modifiée du projet est interdite.
+personnelles
 
-La revente totale ou partielle du logiciel ou de son code source est interdite.
+de démonstration
 
-L’utilisation commerciale est interdite sans accord écrit préalable.
+Il est interdit de :
 
-Ce dépôt est fourni uniquement à des fins personnelles, éducatives et de démonstration.
+modifier le code sans autorisation
 
-Toute utilisation implique l’acceptation de ces conditions.
-Et cette application est en beta je ne suis pas responsable de tout dommages sur vautre machine, et de son utilisation.
+redistribuer une version modifiée
 
+revendre le logiciel
+
+utiliser commercialement sans accord écrit
+
+⚠️ Avertissement
+
+Morner est en version BETA.
+
+L’utilisation se fait sous votre propre responsabilité.
