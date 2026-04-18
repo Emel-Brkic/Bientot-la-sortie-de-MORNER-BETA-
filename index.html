@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Morner — EDR piloté par l'IA</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:       #050810;
+  --bg2:      #080d1a;
+  --bg3:      #0d1424;
+  --panel:    #0f1929;
+  --border:   #1a2540;
+  --accent:   #3b82f6;
+  --accent2:  #6366f1;
+  --cyan:     #06b6d4;
+  --green:    #22c55e;
+  --red:      #ef4444;
+  --yellow:   #f59e0b;
+  --text:     #e2e8f0;
+  --text2:    #94a3b8;
+  --text3:    #475569;
+  --glow:     rgba(59,130,246,.18);
+  --glow2:    rgba(99,102,241,.12);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Syne',sans-serif;
+  overflow-x:hidden;
+}
+
+/* ── GRID BACKGROUND ── */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:
+    linear-gradient(rgba(59,130,246,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59,130,246,.04) 1px, transparent 1px);
+  background-size:60px 60px;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* ── NOISE TEXTURE ── */
+body::after{
+  content:'';
+  position:fixed;
+  inset:0;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events:none;
+  z-index:0;
+  opacity:.4;
+}
+
+/* ── SECTIONS ── */
+section, nav, footer{ position:relative; z-index:1; }
+
+/* ══════════════════════════════════════
+   NAV
+══════════════════════════════════════ */
+nav{
+  position:fixed;
+  top:0; left:0; right:0;
+  height:64px;
+  background:rgba(5,8,16,.85);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 48px;
+  z-index:100;
+}
+
+.nav-logo{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  font-family:'Space Mono',monospace;
+  font-weight:700;
+  font-size:1.1rem;
+  letter-spacing:.06em;
+  color:var(--text);
+}
+
+.nav-logo svg{ filter:drop-shadow(0 0 8px var(--accent)); }
+
+.nav-links{
+  display:flex;
+  gap:32px;
+  list-style:none;
+}
+
+.nav-links a{
+  color:var(--text2);
+  text-decoration:none;
+  font-size:.85rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  transition:color .2s;
+}
+.nav-links a:hover{ color:var(--accent); }
+
+.nav-cta{
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  padding:10px 22px;
+  border-radius:6px;
+  font-family:'Syne',sans-serif;
+  font-size:.85rem;
+  font-weight:700;
+  letter-spacing:.06em;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all .2s;
+  box-shadow:0 0 20px rgba(59,130,246,.3);
+}
+.nav-cta:hover{
+  background:var(--accent2);
+  box-shadow:0 0 30px rgba(99,102,241,.5);
+  transform:translateY(-1px);
+}
+
+/* ══════════════════════════════════════
+   HERO
+══════════════════════════════════════ */
+#hero{
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:120px 24px 80px;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Orbes glowing */
+.orb{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(80px);
+  pointer-events:none;
+}
+.orb-1{
+  width:600px; height:600px;
+  background:radial-gradient(circle, rgba(59,130,246,.15), transparent 70%);
+  top:-100px; left:-100px;
+  animation:float1 8s ease-in-out infinite;
+}
+.orb-2{
+  width:500px; height:500px;
+  background:radial-gradient(circle, rgba(99,102,241,.12), transparent 70%);
+  bottom:-50px; right:-80px;
+  animation:float2 10s ease-in-out infinite;
+}
+.orb-3{
+  width:300px; height:300px;
+  background:radial-gradient(circle, rgba(6,182,212,.1), transparent 70%);
+  top:40%; left:50%;
+  transform:translate(-50%,-50%);
+  animation:float3 6s ease-in-out infinite;
+}
+
+@keyframes float1{
+  0%,100%{transform:translate(0,0);}
+  50%{transform:translate(30px,-20px);}
+}
+@keyframes float2{
+  0%,100%{transform:translate(0,0);}
+  50%{transform:translate(-20px,25px);}
+}
+@keyframes float3{
+  0%,100%{transform:translate(-50%,-50%);}
+  50%{transform:translate(-50%,-60%);}
+}
+
+.hero-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  background:rgba(59,130,246,.1);
+  border:1px solid rgba(59,130,246,.25);
+  border-radius:999px;
+  padding:6px 18px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.75rem;
+  color:var(--accent);
+  margin-bottom:28px;
+  animation:fadeDown .6s ease both;
+}
+
+.badge-dot{
+  width:6px; height:6px;
+  background:var(--green);
+  border-radius:50%;
+  animation:pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot{
+  0%,100%{opacity:1; transform:scale(1);}
+  50%{opacity:.5; transform:scale(.7);}
+}
+
+.hero-title{
+  font-size:clamp(3.5rem, 9vw, 8rem);
+  font-weight:800;
+  letter-spacing:-.02em;
+  line-height:1;
+  animation:fadeDown .7s ease .1s both;
+}
+
+.hero-title .gradient-text{
+  background:linear-gradient(135deg, var(--accent) 0%, var(--cyan) 50%, var(--accent2) 100%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+
+.hero-subtitle{
+  font-family:'JetBrains Mono',monospace;
+  font-size:clamp(.85rem,2vw,1.05rem);
+  color:var(--text2);
+  max-width:640px;
+  line-height:1.7;
+  margin:20px auto 0;
+  animation:fadeDown .7s ease .2s both;
+}
+
+.hero-subtitle .hl{ color:var(--cyan); }
+
+.hero-actions{
+  display:flex;
+  gap:16px;
+  margin-top:44px;
+  flex-wrap:wrap;
+  justify-content:center;
+  animation:fadeDown .7s ease .3s both;
+}
+
+.btn-primary{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  background:var(--accent);
+  color:#fff;
+  border:none;
+  padding:14px 32px;
+  border-radius:8px;
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  font-size:.95rem;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all .25s;
+  box-shadow:0 0 30px rgba(59,130,246,.35);
+}
+.btn-primary:hover{
+  background:var(--accent2);
+  box-shadow:0 0 50px rgba(99,102,241,.5);
+  transform:translateY(-2px);
+}
+
+.btn-secondary{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  background:transparent;
+  color:var(--text2);
+  border:1px solid var(--border);
+  padding:14px 28px;
+  border-radius:8px;
+  font-family:'Syne',sans-serif;
+  font-weight:600;
+  font-size:.9rem;
+  cursor:pointer;
+  text-decoration:none;
+  transition:all .25s;
+}
+.btn-secondary:hover{
+  border-color:var(--accent);
+  color:var(--text);
+  background:rgba(59,130,246,.06);
+}
+
+/* Terminal hero */
+.hero-terminal{
+  margin-top:64px;
+  width:min(760px, 94vw);
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:
+    0 0 80px rgba(59,130,246,.12),
+    0 40px 80px rgba(0,0,0,.6);
+  animation:fadeUp .8s ease .4s both;
+}
+
+.terminal-bar{
+  background:var(--panel);
+  padding:12px 18px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border-bottom:1px solid var(--border);
+}
+
+.term-dot{
+  width:12px; height:12px;
+  border-radius:50%;
+}
+.d-red   { background:#ef4444; }
+.d-yellow{ background:#f59e0b; }
+.d-green { background:#22c55e; }
+
+.term-title{
+  margin-left:auto;
+  margin-right:auto;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.75rem;
+  color:var(--text3);
+  letter-spacing:.08em;
+}
+
+.terminal-body{
+  padding:24px 28px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.8rem;
+  line-height:1.9;
+}
+
+.tl{ display:block; }
+.tl-dim    { color:var(--text3); }
+.tl-safe   { color:var(--green); }
+.tl-warn   { color:var(--yellow); }
+.tl-danger { color:var(--red); }
+.tl-info   { color:var(--accent); }
+.tl-cyan   { color:var(--cyan); }
+.tl-white  { color:var(--text); }
+
+.cursor{
+  display:inline-block;
+  width:8px; height:14px;
+  background:var(--accent);
+  animation:blink 1.2s step-end infinite;
+  vertical-align:middle;
+  margin-left:2px;
+}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+@keyframes fadeDown{
+  from{opacity:0;transform:translateY(-20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(20px);}
+  to{opacity:1;transform:translateY(0);}
+}
+
+/* ══════════════════════════════════════
+   SECTION WRAPPER
+══════════════════════════════════════ */
+.section{
+  padding:100px 24px;
+  max-width:1160px;
+  margin:0 auto;
+}
+
+.section-label{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--accent);
+  margin-bottom:14px;
+}
+.section-label::before{
+  content:'';
+  width:24px; height:1px;
+  background:var(--accent);
+}
+
+.section-title{
+  font-size:clamp(1.8rem, 4vw, 2.8rem);
+  font-weight:800;
+  letter-spacing:-.02em;
+  line-height:1.1;
+  margin-bottom:16px;
+}
+
+.section-desc{
+  font-size:1rem;
+  color:var(--text2);
+  max-width:560px;
+  line-height:1.7;
+}
+
+/* ══════════════════════════════════════
+   STATS BAR
+══════════════════════════════════════ */
+#stats{
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+  padding:40px 24px;
+}
+
+.stats-grid{
+  max-width:1160px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:2px;
+}
+
+.stat-card{
+  text-align:center;
+  padding:28px 20px;
+  border-right:1px solid var(--border);
+  position:relative;
+}
+.stat-card:last-child{ border-right:none; }
+
+.stat-number{
+  font-size:2.6rem;
+  font-weight:800;
+  font-family:'Space Mono',monospace;
+  background:linear-gradient(135deg, var(--accent), var(--cyan));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1;
+  margin-bottom:6px;
+}
+
+.stat-label{
+  font-size:.8rem;
+  color:var(--text3);
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+/* ══════════════════════════════════════
+   IA FEATURE SPLIT
+══════════════════════════════════════ */
+#ia-section{
+  padding:120px 24px;
+  max-width:1160px;
+  margin:0 auto;
+}
+
+.ia-split{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:80px;
+  align-items:center;
+}
+
+.ia-comparison{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.cmp-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  border-bottom:1px solid var(--border);
+}
+.cmp-row:last-child{ border-bottom:none; }
+
+.cmp-cell{
+  padding:20px 20px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.75rem;
+  line-height:1.6;
+}
+
+.cmp-cell.old{
+  color:var(--text3);
+  border-right:1px solid var(--border);
+  background:rgba(0,0,0,.2);
+}
+
+.cmp-cell.new{ color:var(--text); }
+
+.cmp-header{
+  background:var(--panel);
+  padding:12px 20px;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  border-bottom:1px solid var(--border);
+}
+
+.cmp-header span{
+  font-size:.7rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+.cmp-header .h-old{ color:var(--text3); }
+.cmp-header .h-new{ color:var(--accent); }
+
+.ia-text .tag{
+  display:inline-block;
+  background:rgba(59,130,246,.12);
+  border:1px solid rgba(59,130,246,.2);
+  color:var(--accent);
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  padding:3px 10px;
+  border-radius:4px;
+  margin-bottom:14px;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+}
+
+.ia-features-list{
+  list-style:none;
+  margin-top:28px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.ia-features-list li{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+  font-size:.9rem;
+  color:var(--text2);
+  line-height:1.5;
+}
+
+.ia-features-list .icon{
+  font-size:1rem;
+  flex-shrink:0;
+  margin-top:1px;
+}
+
+/* ══════════════════════════════════════
+   FEATURES GRID
+══════════════════════════════════════ */
+#features{ padding:100px 24px; }
+
+.features-grid{
+  max-width:1160px;
+  margin:48px auto 0;
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:2px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.feat-card{
+  background:var(--bg2);
+  padding:36px 32px;
+  border:none;
+  transition:background .25s;
+  position:relative;
+  overflow:hidden;
+}
+
+.feat-card::before{
+  content:'';
+  position:absolute;
+  top:0; left:0; right:0;
+  height:2px;
+  background:linear-gradient(90deg, var(--accent), var(--accent2));
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .3s;
+}
+
+.feat-card:hover::before{ transform:scaleX(1); }
+.feat-card:hover{ background:var(--bg3); }
+
+.feat-icon{
+  font-size:1.8rem;
+  margin-bottom:18px;
+  display:block;
+}
+
+.feat-title{
+  font-size:1rem;
+  font-weight:700;
+  margin-bottom:10px;
+  color:var(--text);
+}
+
+.feat-desc{
+  font-size:.85rem;
+  color:var(--text2);
+  line-height:1.65;
+}
+
+.feat-tags{
+  margin-top:16px;
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+}
+
+.feat-tag{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;
+  padding:3px 8px;
+  border-radius:4px;
+  background:rgba(59,130,246,.1);
+  color:var(--accent);
+  border:1px solid rgba(59,130,246,.2);
+}
+
+/* ══════════════════════════════════════
+   THREAT INTEL SECTION
+══════════════════════════════════════ */
+#threat{
+  padding:100px 24px;
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+
+.threat-inner{
+  max-width:1160px;
+  margin:0 auto;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:80px;
+  align-items:center;
+}
+
+.feeds-list{
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+  margin-top:32px;
+}
+
+.feed-row{
+  display:flex;
+  align-items:center;
+  padding:18px 20px;
+  border-bottom:1px solid var(--border);
+  background:var(--bg3);
+  transition:background .2s;
+  gap:16px;
+}
+.feed-row:last-child{ border-bottom:none; }
+.feed-row:hover{ background:var(--panel); }
+
+.feed-dot{
+  width:8px; height:8px;
+  border-radius:50%;
+  background:var(--green);
+  flex-shrink:0;
+  box-shadow:0 0 8px var(--green);
+}
+
+.feed-name{
+  font-size:.85rem;
+  font-weight:600;
+  flex:1;
+}
+
+.feed-source{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.7rem;
+  color:var(--text3);
+}
+
+.feed-badge{
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;
+  padding:3px 8px;
+  border-radius:4px;
+  background:rgba(34,197,94,.1);
+  color:var(--green);
+  border:1px solid rgba(34,197,94,.2);
+}
+
+.threat-text .big-number{
+  font-size:4rem;
+  font-weight:800;
+  font-family:'Space Mono',monospace;
+  background:linear-gradient(135deg, var(--green), var(--cyan));
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  line-height:1;
+  display:block;
+  margin-bottom:4px;
+}
+
+/* ══════════════════════════════════════
+   POPUP PREVIEW
+══════════════════════════════════════ */
+#popup-section{
+  padding:100px 24px;
+  max-width:1160px;
+  margin:0 auto;
+}
+
+.popup-layout{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:72px;
+  align-items:center;
+  margin-top:48px;
+}
+
+.popup-mockup{
+  background:var(--bg3);
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+  box-shadow:
+    0 0 60px rgba(59,130,246,.1),
+    0 30px 60px rgba(0,0,0,.5);
+}
+
+.popup-header{
+  background:#991b1b;
+  padding:16px 20px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:700;
+  font-size:.9rem;
+}
+
+.popup-score{
+  background:var(--panel);
+  padding:10px 20px;
+  border-bottom:1px solid var(--border);
+  font-family:'JetBrains Mono',monospace;
+  font-size:.8rem;
+  color:var(--red);
+  font-weight:700;
+}
+
+.popup-rows{ border-bottom:1px solid var(--border); }
+
+.popup-row{
+  display:flex;
+  padding:10px 20px;
+  border-bottom:1px solid rgba(30,40,60,.5);
+  font-size:.8rem;
+}
+.popup-row:last-child{ border-bottom:none; }
+.popup-row .k{
+  color:var(--text2);
+  width:110px;
+  flex-shrink:0;
+  font-family:'JetBrains Mono',monospace;
+}
+.popup-row .v{ color:var(--text); }
+.popup-row .v.danger{ color:var(--red); }
+.popup-row .v.warn{ color:var(--yellow); }
+
+.popup-ai-zone{
+  background:rgba(59,130,246,.04);
+  border-top:1px solid var(--border);
+  padding:16px 20px;
+}
+
+.popup-ai-label{
+  font-size:.7rem;
+  color:var(--accent);
+  font-family:'JetBrains Mono',monospace;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+
+.popup-ai-text{
+  font-size:.78rem;
+  color:var(--text2);
+  line-height:1.6;
+  font-family:'JetBrains Mono',monospace;
+}
+
+.popup-ai-text .verdict-danger{ color:var(--red); font-weight:bold; }
+
+.popup-buttons{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  padding:14px 20px;
+}
+
+.popup-btn{
+  padding:10px;
+  border:none;
+  border-radius:6px;
+  font-family:'Syne',sans-serif;
+  font-weight:700;
+  font-size:.8rem;
+  cursor:default;
+  text-align:center;
+}
+
+.pb-block{ background:#dc2626; color:white; }
+.pb-allow{ background:#16a34a; color:white; }
+
+.popup-text .steps{
+  list-style:none;
+  margin-top:24px;
+  counter-reset:steps;
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+
+.popup-text .steps li{
+  display:flex;
+  gap:16px;
+  align-items:flex-start;
+  counter-increment:steps;
+}
+
+.popup-text .steps li::before{
+  content:counter(steps);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:28px; height:28px;
+  background:rgba(59,130,246,.15);
+  border:1px solid rgba(59,130,246,.3);
+  border-radius:50%;
+  font-family:'Space Mono',monospace;
+  font-size:.7rem;
+  color:var(--accent);
+  flex-shrink:0;
+  margin-top:1px;
+}
+
+.popup-text .steps li .step-text{
+  font-size:.9rem;
+  color:var(--text2);
+  line-height:1.6;
+}
+
+.popup-text .steps li .step-title{
+  font-size:.9rem;
+  font-weight:700;
+  color:var(--text);
+  display:block;
+  margin-bottom:3px;
+}
+
+/* ══════════════════════════════════════
+   MODES TABLE
+══════════════════════════════════════ */
+#modes{
+  padding:100px 24px;
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  border-bottom:1px solid var(--border);
+}
+
+.modes-inner{
+  max-width:1160px;
+  margin:0 auto;
+}
+
+.modes-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:2px;
+  margin-top:48px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.mode-card{
+  background:var(--bg3);
+  padding:32px 24px;
+  transition:background .2s;
+  position:relative;
+}
+
+.mode-card:hover{ background:var(--panel); }
+
+.mode-card.featured{
+  background:linear-gradient(135deg, rgba(99,102,241,.12), rgba(59,130,246,.08));
+  border:1px solid rgba(99,102,241,.3);
+}
+
+.mode-card.featured::after{
+  content:'RECOMMANDÉ';
+  position:absolute;
+  top:16px; right:16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.55rem;
+  letter-spacing:.15em;
+  color:var(--accent2);
+  background:rgba(99,102,241,.15);
+  border:1px solid rgba(99,102,241,.25);
+  padding:3px 8px;
+  border-radius:4px;
+}
+
+.mode-icon{
+  font-size:2rem;
+  margin-bottom:14px;
+  display:block;
+}
+
+.mode-name{
+  font-size:.95rem;
+  font-weight:700;
+  margin-bottom:10px;
+  color:var(--text);
+}
+
+.mode-desc{
+  font-size:.82rem;
+  color:var(--text2);
+  line-height:1.65;
+}
+
+/* ══════════════════════════════════════
+   INSTALL
+══════════════════════════════════════ */
+#install{
+  padding:100px 24px;
+  max-width:800px;
+  margin:0 auto;
+  text-align:center;
+}
+
+.install-steps{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+  margin-top:48px;
+  text-align:left;
+  border:1px solid var(--border);
+  border-radius:12px;
+  overflow:hidden;
+}
+
+.install-step{
+  background:var(--bg2);
+  padding:22px 28px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  align-items:flex-start;
+  gap:20px;
+}
+.install-step:last-child{ border-bottom:none; }
+
+.install-num{
+  width:30px; height:30px;
+  background:rgba(59,130,246,.12);
+  border:1px solid rgba(59,130,246,.25);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family:'Space Mono',monospace;
+  font-size:.75rem;
+  color:var(--accent);
+  flex-shrink:0;
+  margin-top:1px;
+}
+
+.install-content{ flex:1; }
+
+.install-label{
+  font-size:.9rem;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+.code-block{
+  background:var(--bg);
+  border:1px solid var(--border);
+  border-radius:6px;
+  padding:10px 16px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.8rem;
+  color:var(--cyan);
+  position:relative;
+  overflow:hidden;
+}
+
+.code-block .comment{ color:var(--text3); }
+
+.install-note{
+  font-size:.8rem;
+  color:var(--text3);
+  margin-top:6px;
+  font-family:'JetBrains Mono',monospace;
+}
+
+/* ══════════════════════════════════════
+   FOOTER
+══════════════════════════════════════ */
+footer{
+  background:var(--bg2);
+  border-top:1px solid var(--border);
+  padding:60px 48px 40px;
+}
+
+.footer-inner{
+  max-width:1160px;
+  margin:0 auto;
+}
+
+.footer-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  padding-bottom:40px;
+  border-bottom:1px solid var(--border);
+  margin-bottom:32px;
+}
+
+.footer-brand .tagline{
+  font-size:.8rem;
+  color:var(--text3);
+  margin-top:8px;
+  max-width:280px;
+  line-height:1.5;
+}
+
+.footer-links{
+  display:flex;
+  gap:48px;
+}
+
+.footer-col h4{
+  font-size:.75rem;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:var(--text3);
+  margin-bottom:14px;
+}
+
+.footer-col ul{
+  list-style:none;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.footer-col a{
+  color:var(--text2);
+  text-decoration:none;
+  font-size:.85rem;
+  transition:color .2s;
+}
+.footer-col a:hover{ color:var(--accent); }
+
+.footer-bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:.78rem;
+  color:var(--text3);
+}
+
+.beta-tag{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  background:rgba(245,158,11,.1);
+  border:1px solid rgba(245,158,11,.25);
+  color:var(--yellow);
+  font-family:'JetBrains Mono',monospace;
+  font-size:.65rem;
+  letter-spacing:.12em;
+  padding:4px 10px;
+  border-radius:4px;
+}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media(max-width:900px){
+  nav{ padding:0 24px; }
+  .nav-links{ display:none; }
+  .stats-grid{ grid-template-columns:repeat(2,1fr); }
+  .ia-split,.threat-inner,.popup-layout{ grid-template-columns:1fr; gap:40px; }
+  .features-grid{ grid-template-columns:1fr 1fr; }
+  .modes-grid{ grid-template-columns:1fr 1fr; }
+  .ia-split .ia-text{ order:-1; }
+  .footer-top{ flex-direction:column; gap:32px; }
+}
+
+@media(max-width:600px){
+  .features-grid,.modes-grid{ grid-template-columns:1fr; }
+  .stats-grid{ grid-template-columns:1fr 1fr; }
+  .popup-buttons{ grid-template-columns:1fr; }
+}
+
+/* ══════════════════════════════════════
+   SCROLL ANIMATIONS
+══════════════════════════════════════ */
+.reveal{
+  opacity:0;
+  transform:translateY(24px);
+  transition:opacity .6s ease, transform .6s ease;
+}
+.reveal.visible{
+  opacity:1;
+  transform:translateY(0);
+}
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-logo">
+    <svg width="28" height="28" viewBox="0 0 28 28">
+      <!-- Hexagonal shield -->
+      <polygon points="14,2 24,7.5 24,20.5 14,26 4,20.5 4,7.5" fill="none" stroke="#3b82f6" stroke-width="1.5"/>
+      <polygon points="14,6 20,9.5 20,18.5 14,22 8,18.5 8,9.5" fill="rgba(59,130,246,.12)"/>
+      <!-- Eye -->
+      <ellipse cx="14" cy="14" rx="4" ry="2.5" fill="none" stroke="#06b6d4" stroke-width="1"/>
+      <circle cx="14" cy="14" r="1.5" fill="#06b6d4"/>
+      <circle cx="14" cy="14" r=".6" fill="#050810"/>
+      <!-- Scan lines -->
+      <line x1="4" y1="14" x2="8" y2="14" stroke="#6366f1" stroke-width=".8"/>
+      <line x1="20" y1="14" x2="24" y2="14" stroke="#6366f1" stroke-width=".8"/>
+      <line x1="14" y1="2" x2="14" y2="6" stroke="#6366f1" stroke-width=".8"/>
+    </svg>
+    MORNER
+  </div>
+  <ul class="nav-links">
+    <li><a href="#features">Fonctionnalités</a></li>
+    <li><a href="#ia-section">IA</a></li>
+    <li><a href="#threat">Threat Intel</a></li>
+    <li><a href="#install">Installation</a></li>
+  </ul>
+  <a href="https://drive.google.com/file/d/1dYjCcx6xz3gSYF71__9wYWxHY0rv5Mwb/view?usp=sharing"
+     class="nav-cta" target="_blank">
+    ↓ Télécharger BETA
+  </a>
+</nav>
+
+<!-- ── HERO ── -->
+<section id="hero">
+  <div class="orb orb-1"></div>
+  <div class="orb orb-2"></div>
+  <div class="orb orb-3"></div>
+
+  <div class="hero-badge">
+    <span class="badge-dot"></span>
+    v5.0 BETA · Windows · Python 3.9+
+  </div>
+
+  <h1 class="hero-title">
+    <span class="gradient-text">MORNER</span>
+  </h1>
+
+  <p class="hero-subtitle">
+    Un EDR comportemental piloté par l'IA.<br/>
+    Il ne détecte pas les menaces connues — il <span class="hl">comprend</span> les comportements,
+    <span class="hl">raisonne</span> sur le contexte, et exprime ses verdicts
+    en <span class="hl">langage naturel</span>.
+  </p>
+
+  <div class="hero-actions">
+    <a href="https://drive.google.com/file/d/1dYjCcx6xz3gSYF71__9wYWxHY0rv5Mwb/view?usp=sharing"
+       class="btn-primary" target="_blank">
+      ↓ Télécharger la BETA
+    </a>
+    <a href="#ia-section" class="btn-secondary">
+      → Voir le moteur IA
+    </a>
+  </div>
+
+  <!-- Terminal -->
+  <div class="hero-terminal">
+    <div class="terminal-bar">
+      <span class="term-dot d-red"></span>
+      <span class="term-dot d-yellow"></span>
+      <span class="term-dot d-green"></span>
+      <span class="term-title">morner_v5 — surveillance active</span>
+    </div>
+    <div class="terminal-body">
+      <span class="tl tl-dim">// 21:47:03 — Protection démarrée · 4 threads actifs</span>
+      <span class="tl">&nbsp;</span>
+      <span class="tl tl-info">[ scan ] Analyse des connexions actives…</span>
+      <span class="tl tl-safe">  ✅  chrome.exe        → 142.250.74.46:443    Application connue — Google LLC</span>
+      <span class="tl tl-safe">  ✅  discord.exe       → 162.159.130.234:443  Application connue — Cloudflare/Discord</span>
+      <span class="tl tl-safe">  ✅  spotify.exe       → 35.186.224.47:443    Application connue — Spotify AB</span>
+      <span class="tl">&nbsp;</span>
+      <span class="tl tl-warn">  🟡  python.exe        → 45.33.32.156:8080    Activité suspecte — hébergeur inconnu</span>
+      <span class="tl">&nbsp;</span>
+      <span class="tl tl-danger">  🔴  powershell.exe   → 185.220.101.5:4444   Menace détectée</span>
+      <span class="tl tl-danger">       └─ Port 4444 (Metasploit) · IP bulletproof · Russie</span>
+      <span class="tl tl-danger">       └─ Connexion périodique (beacon) · Persistance registre détectée</span>
+      <span class="tl">&nbsp;</span>
+      <span class="tl tl-cyan">[ IA ] Verdict : BLOQUER — Lancer popup de confirmation…</span>
+      <span class="tl tl-dim">_<span class="cursor"></span></span>
+    </div>
+  </div>
+</section>
+
+<!-- ── STATS ── -->
+<section id="stats">
+  <div class="stats-grid">
+    <div class="stat-card reveal">
+      <div class="stat-number">60+</div>
+      <div class="stat-label">Apps reconnues sans fausse alerte</div>
+    </div>
+    <div class="stat-card reveal">
+      <div class="stat-number">4</div>
+      <div class="stat-label">Feeds threat intel intégrés</div>
+    </div>
+    <div class="stat-card reveal">
+      <div class="stat-number">100%</div>
+      <div class="stat-label">IA locale — aucune API externe</div>
+    </div>
+    <div class="stat-card reveal">
+      <div class="stat-number">4</div>
+      <div class="stat-label">Modes de protection disponibles</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── IA SECTION ── -->
+<section id="ia-section">
+  <div class="ia-split">
+    <div class="ia-comparison reveal">
+      <div class="cmp-header">
+        <span class="h-old">Ancien système</span>
+        <span class="h-new">Morner v5 — Verdict IA</span>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell old">Score : 78/100<br/><br/>⚠️ Alerte niveau 2</div>
+        <div class="cmp-cell new" style="color:var(--red)">🔴 Menace détectée<br/><span style="color:var(--text2)">powershell.exe contact une IP bulletproof (Russie) via Metasploit port 4444. Blocage recommandé.</span></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell old">Score : 45/100<br/><br/>⚠️ Alerte niveau 1</div>
+        <div class="cmp-cell new" style="color:var(--green)">✅ Application connue<br/><span style="color:var(--text2)">Discord communique avec ses CDN Cloudflare habituels. Comportement normal.</span></div>
+      </div>
+      <div class="cmp-row">
+        <div class="cmp-cell old">Score : 62/100<br/><br/>⚠️ Alerte niveau 2</div>
+        <div class="cmp-cell new" style="color:var(--yellow)">🟡 Activité suspecte<br/><span style="color:var(--text2)">python.exe contacte un hébergeur non référencé. Surveillance conseillée.</span></div>
+      </div>
+    </div>
+
+    <div class="ia-text reveal">
+      <div class="section-label">Moteur IA Autonome</div>
+      <h2 class="section-title">L'IA explique,<br/>pas un chiffre.</h2>
+      <p class="section-desc">
+        Fini les scores abstraits. Morner analyse chaque connexion avec son contexte complet
+        et exprime un verdict compréhensible — même sans expertise technique.
+      </p>
+      <ul class="ia-features-list">
+        <li>
+          <span class="icon">🧠</span>
+          <span><strong>Raisonnement contextuel</strong> — processus + IP + port + domaine + géolocalisation + comportement historique analysés ensemble</span>
+        </li>
+        <li>
+          <span class="icon">🌍</span>
+          <span><strong>Lookup IP autonome</strong> — organisation, pays, risque géographique via ipinfo.io, sans clé API</span>
+        </li>
+        <li>
+          <span class="icon">🛡️</span>
+          <span><strong>Anti-faux positifs</strong> — 60+ apps du quotidien reconnues et whitelistées automatiquement</span>
+        </li>
+        <li>
+          <span class="icon">🤖</span>
+          <span><strong>Mode Autonome</strong> — l'IA décide et agit seule, loggue chaque décision en clair</span>
+        </li>
+        <li>
+          <span class="icon">🔒</span>
+          <span><strong>100% local</strong> — aucune donnée ne quitte votre machine, aucun cloud, aucune API payante</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section id="features">
+  <div style="max-width:1160px;margin:0 auto;">
+    <div class="section-label">Fonctionnalités</div>
+    <h2 class="section-title">Tout ce dont vous avez besoin<br/>pour surveiller votre réseau.</h2>
+  </div>
+
+  <div class="features-grid">
+    <div class="feat-card reveal">
+      <span class="feat-icon">🔍</span>
+      <div class="feat-title">Surveillance Temps Réel</div>
+      <p class="feat-desc">Analyse continue de toutes les connexions TCP/UDP, avec identification du processus, domaine, port et géolocalisation.</p>
+      <div class="feat-tags">
+        <span class="feat-tag">IPv4</span>
+        <span class="feat-tag">IPv6</span>
+        <span class="feat-tag">DNS inverse</span>
+      </div>
+    </div>
+    <div class="feat-card reveal">
+      <span class="feat-icon">🤖</span>
+      <div class="feat-title">Mode IA Gère Tout</div>
+      <p class="feat-desc">Activez le mode autonome et laissez l'IA bloquer, autoriser et logguer chaque connexion sans aucune intervention manuelle.</p>
+      <div class="feat-tags">
+        <span class="feat-tag">Autonome</span>
+        <span class="feat-tag">100% local</span>
+      </div>
+    </div>
+    <div class="feat-card reveal">
+      <span class="feat-icon">💬</span>
+      <div class="feat-title">Popup de Confirmation IA</div>
+      <p class="feat-desc">Avant chaque blocage : résumé IA avec pays d'origine, organisation, analyse du port, conseil personnalisé.</p>
+      <div class="feat-tags">
+        <span class="feat-tag">Géolocalisation</span>
+        <span class="feat-tag">Conseil IA</span>
+      </div>
+    </div>
+    <div class="feat-card reveal">
+      <span class="feat-icon">📡</span>
+      <div class="feat-title">Threat Intel Auto-Update</div>
+      <p class="feat-desc">Mise à jour en un clic depuis 4 feeds publics : Feodo Tracker, URLhaus, Blocklist.de, CINS Army.</p>
+      <div class="feat-tags">
+        <span class="feat-tag">abuse.ch</span>
+        <span class="feat-tag">blocklist.de</span>
+      </div>
+    </div>
+    <div class="feat-card reveal">
+      <span class="feat-icon">🌐</span>
+      <div class="feat-title">Navigateur Privé Intégré</div>
+      <p class="feat-desc">Navigateur minimaliste avec blocage trackers, zéro cookie persistant, liens cliquables, et recherche DuckDuckGo intégrée.</p>
+      <div class="feat-tags">
+        <span class="feat-tag">Anti-tracker</span>
+        <span class="feat-tag">HTTPS</span>
+        <span class="feat-tag">Privé</span>
+      </div>
+    </div>
+    <div class="feat-card reveal">
+      <span class="feat-icon">🔐</span>
+      <div class="feat-title">Coffre-Fort AES-256</div>
+      <p class="feat-desc">Stockage chiffré de données sensibles, protégé par mot de passe maître avec re-chiffrement complet au changement.</p>
+      <div class="feat-tags">
+        <span class="feat-tag">AES-256</span>
+        <span class="feat-tag">Local</span>
+      </div>
+    </div>
+    <div class="feat-card reveal">
+      <span class="feat-icon">⏱️</span>
+      <div class="feat-title">Détection Beacon Malware</div>
+      <p class="feat-desc">Le PeriodicityDetector identifie les communications régulières des malwares C&C — invisible aux outils classiques.</p>
+      <div class="feat-tags">
+        <span class="feat-tag">Comportemental</span>
+        <span class="feat-tag">EDR</span>
+      </div>
+    </div>
+    <div class="feat-card reveal">
+      <span class="feat-icon">🎮</span>
+      <div class="feat-title">Mode Gaming</div>
+      <p class="feat-desc">Protection des processus de jeux (Steam, Epic, Valorant, Fortnite…) pour éviter les faux positifs et les conflits anti-cheat.</p>
+      <div class="feat-tags">
+        <span class="feat-tag">Steam</span>
+        <span class="feat-tag">Epic</span>
+        <span class="feat-tag">Anti-cheat</span>
+      </div>
+    </div>
+    <div class="feat-card reveal">
+      <span class="feat-icon">📊</span>
+      <div class="feat-title">Graphes Live & Task Manager</div>
+      <p class="feat-desc">Visualisation du trafic en temps réel, gestionnaire de processus intégré avec tri CPU/RAM, journal forensic exportable.</p>
+      <div class="feat-tags">
+        <span class="feat-tag">Temps réel</span>
+        <span class="feat-tag">Export CSV</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── THREAT INTEL ── -->
+<section id="threat">
+  <div class="threat-inner">
+    <div class="threat-text reveal">
+      <div class="section-label">Base de données</div>
+      <h2 class="section-title">Toujours à jour.<br/>En un clic.</h2>
+      <p class="section-desc">
+        Morner se connecte aux meilleures sources publiques de threat intelligence
+        et fusionne les données en local — sans compte, sans abonnement.
+      </p>
+      <div style="margin-top:36px;">
+        <span class="big-number" style="font-family:'Space Mono',monospace;font-size:3rem;font-weight:800;background:linear-gradient(135deg,var(--green),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;display:block;line-height:1;margin-bottom:6px;">100k+</span>
+        <span style="font-size:.82rem;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;">IPs malveillantes indexées après mise à jour</span>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <div class="feeds-list">
+        <div class="feed-row">
+          <span class="feed-dot"></span>
+          <div>
+            <div class="feed-name">Feodo Tracker</div>
+            <div class="feed-source">feodotracker.abuse.ch</div>
+          </div>
+          <span class="feed-badge">Botnet C&amp;C actifs</span>
+        </div>
+        <div class="feed-row">
+          <span class="feed-dot"></span>
+          <div>
+            <div class="feed-name">URLhaus</div>
+            <div class="feed-source">urlhaus.abuse.ch</div>
+          </div>
+          <span class="feed-badge">Malware hosting</span>
+        </div>
+        <div class="feed-row">
+          <span class="feed-dot"></span>
+          <div>
+            <div class="feed-name">Blocklist.de</div>
+            <div class="feed-source">lists.blocklist.de</div>
+          </div>
+          <span class="feed-badge">Toutes attaques</span>
+        </div>
+        <div class="feed-row">
+          <span class="feed-dot"></span>
+          <div>
+            <div class="feed-name">CINS Army</div>
+            <div class="feed-source">cinsscore.com</div>
+          </div>
+          <span class="feed-badge">Scanners &amp; bots</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── POPUP PREVIEW ── -->
+<section id="popup-section">
+  <div class="popup-layout">
+    <div class="popup-mockup reveal">
+      <div class="popup-header">
+        🚨  CONNEXION SUSPECTE DÉTECTÉE
+      </div>
+      <div class="popup-score">Score de risque Morner : 94 / 100</div>
+      <div class="popup-rows">
+        <div class="popup-row">
+          <span class="k">🖥 Processus</span>
+          <span class="v danger">powershell.exe</span>
+        </div>
+        <div class="popup-row">
+          <span class="k">🌐 Adresse IP</span>
+          <span class="v warn">185.220.101.5</span>
+        </div>
+        <div class="popup-row">
+          <span class="k">🌍 Pays</span>
+          <span class="v">Russie · Risque ÉLEVÉ</span>
+        </div>
+        <div class="popup-row">
+          <span class="k">🔌 Port</span>
+          <span class="v danger">4444 — Metasploit reverse shell</span>
+        </div>
+      </div>
+      <div class="popup-ai-zone">
+        <div class="popup-ai-label">🤖 Analyse IA</div>
+        <div class="popup-ai-text">
+          <span class="verdict-danger">🔴 MENACE DÉTECTÉE</span><br/>
+          PowerShell contacte une IP de réseau Tor (Russie) via le port Metasploit.
+          Connexion périodique détectée — probable beacon C&amp;C.<br/>
+          <span style="color:var(--yellow)">Conseil : Bloquer + terminer le processus.</span>
+        </div>
+      </div>
+      <div class="popup-buttons">
+        <div class="popup-btn pb-block">🚫  BLOQUER L'IP</div>
+        <div class="popup-btn pb-allow">✅  AUTORISER</div>
+      </div>
+    </div>
+
+    <div class="popup-text reveal">
+      <div class="section-label">Popup de confirmation</div>
+      <h2 class="section-title">Une décision<br/>éclairée à chaque fois.</h2>
+      <p class="section-desc">Avant tout blocage, Morner vous présente une analyse complète pour que vous sachiez exactement pourquoi agir.</p>
+      <ul class="steps">
+        <li>
+          <div class="step-text">
+            <span class="step-title">Détection comportementale</span>
+            Le moteur détecte une connexion anormale selon l'analyse de 6 facteurs simultanés.
+          </div>
+        </li>
+        <li>
+          <div class="step-text">
+            <span class="step-title">Analyse IA en temps réel</span>
+            L'IA identifie le processus, géolocalise l'IP, analyse le port et formule un verdict en clair.
+          </div>
+        </li>
+        <li>
+          <div class="step-text">
+            <span class="step-title">Vous décidez</span>
+            Bloquer, autoriser, ou ignorer — avec option de terminer aussi le processus.
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ── MODES ── -->
+<section id="modes">
+  <div class="modes-inner">
+    <div class="section-label">Modes de protection</div>
+    <h2 class="section-title">Du monitoring passif<br/>à l'IA pleinement autonome.</h2>
+
+    <div class="modes-grid">
+      <div class="mode-card reveal">
+        <span class="mode-icon">👁</span>
+        <div class="mode-name">Surveillance</div>
+        <p class="mode-desc">Analyse et affiche les verdicts IA en temps réel, sans aucune action automatique.</p>
+      </div>
+      <div class="mode-card reveal">
+        <span class="mode-icon">💬</span>
+        <div class="mode-name">Popup</div>
+        <p class="mode-desc">Demande une confirmation avec résumé IA complet avant chaque blocage.</p>
+      </div>
+      <div class="mode-card reveal">
+        <span class="mode-icon">🔒</span>
+        <div class="mode-name">Blocage Auto</div>
+        <p class="mode-desc">Bloque silencieusement les connexions classées dangereuses, sans interruption.</p>
+      </div>
+      <div class="mode-card featured reveal">
+        <span class="mode-icon">🤖</span>
+        <div class="mode-name">IA Gère Tout</div>
+        <p class="mode-desc">L'IA décide seule — bloque, autorise et loggue chaque décision en langage naturel.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── INSTALL ── -->
+<section id="install">
+  <div class="section-label" style="justify-content:center;">Installation</div>
+  <h2 class="section-title">Opérationnel en 3 minutes.</h2>
+  <p class="section-desc" style="margin:0 auto 0;text-align:center;">
+    Python est le seul prérequis. Windows recommandé pour les fonctionnalités pare-feu.
+  </p>
+
+  <div class="install-steps reveal" style="margin-top:40px;">
+    <div class="install-step">
+      <div class="install-num">1</div>
+      <div class="install-content">
+        <div class="install-label">Télécharger Morner</div>
+        <a href="https://drive.google.com/file/d/1dYjCcx6xz3gSYF71__9wYWxHY0rv5Mwb/view?usp=sharing"
+           target="_blank" class="btn-primary" style="display:inline-flex;margin-top:8px;font-size:.85rem;padding:10px 20px;">
+          ↓ Télécharger la BETA v5.0
+        </a>
+      </div>
+    </div>
+    <div class="install-step">
+      <div class="install-num">2</div>
+      <div class="install-content">
+        <div class="install-label">Installer la dépendance</div>
+        <div class="code-block" style="margin-top:8px;">
+          <span class="comment"># Ouvrir un terminal et exécuter :</span><br/>
+          pip install psutil win10toast
+        </div>
+      </div>
+    </div>
+    <div class="install-step">
+      <div class="install-num">3</div>
+      <div class="install-content">
+        <div class="install-label">Lancer (droits admin recommandés)</div>
+        <div class="code-block" style="margin-top:8px;">
+          python Morner_v5.py
+        </div>
+        <div class="install-note">⚠ Droits administrateur nécessaires pour le blocage pare-feu</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="nav-logo" style="font-size:1rem;">
+          <svg width="24" height="24" viewBox="0 0 28 28">
+            <polygon points="14,2 24,7.5 24,20.5 14,26 4,20.5 4,7.5" fill="none" stroke="#3b82f6" stroke-width="1.5"/>
+            <ellipse cx="14" cy="14" rx="4" ry="2.5" fill="none" stroke="#06b6d4" stroke-width="1"/>
+            <circle cx="14" cy="14" r="1.5" fill="#06b6d4"/>
+          </svg>
+          MORNER v5.0
+        </div>
+        <p class="tagline">
+          EDR comportemental piloté par l'IA.<br/>
+          Développé par BRKIC Emel.
+        </p>
+        <div class="beta-tag" style="margin-top:14px;">
+          <span>⚠</span> VERSION BETA — Utilisation sous votre responsabilité
+        </div>
+      </div>
+
+      <div class="footer-links">
+        <div class="footer-col">
+          <h4>Logiciel</h4>
+          <ul>
+            <li><a href="https://drive.google.com/file/d/1dYjCcx6xz3gSYF71__9wYWxHY0rv5Mwb/view?usp=sharing" target="_blank">Télécharger BETA</a></li>
+            <li><a href="#features">Fonctionnalités</a></li>
+            <li><a href="#install">Installation</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Ressources</h4>
+          <ul>
+            <li><a href="https://feodotracker.abuse.ch" target="_blank">Feodo Tracker</a></li>
+            <li><a href="https://urlhaus.abuse.ch" target="_blank">URLhaus</a></li>
+            <li><a href="https://lists.blocklist.de" target="_blank">Blocklist.de</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2024–2025 BRKIC Emel — Tous droits réservés · Usage éducatif et personnel uniquement</span>
+      <span style="font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--text3);">
+        MORNER v5.0 · Python · Tkinter · Windows EDR
+      </span>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if(e.isIntersecting){
+      e.target.classList.add('visible');
+      observer.unobserve(e.target);
+    }
+  });
+}, { threshold: 0.12, rootMargin:'0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => {
+  // Stagger children
+  const siblings = el.parentElement.querySelectorAll('.reveal');
+  siblings.forEach((s, i) => {
+    s.style.transitionDelay = (i * 80) + 'ms';
+  });
+  observer.observe(el);
+});
+
+// Smooth nav highlight
+const sections = document.querySelectorAll('section[id]');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if(window.scrollY >= s.offsetTop - 100) current = s.id;
+  });
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.style.color = a.getAttribute('href') === '#'+current
+      ? 'var(--accent)' : '';
+  });
+}, { passive: true });
+</script>
+
+</body>
+</html>
